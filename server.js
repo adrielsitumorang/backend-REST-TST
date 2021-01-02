@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 const Axios = require('axios');
 const { Pool } = require('pg');
 require('dotenv').config();
+var cors = require('cors');
 
 const PORT = process.env.PORT || 5000
 
@@ -24,6 +25,7 @@ const pool = new Pool(config);
 
 express()
   .use(bodyParser.json())
+  .use(cors())
   .post('/pemuridan', (req, res) => {
       pool.connect().then((client) => {
         return client.query("INSERT INTO pemuridan (nim, nama, jurusan, gender, angkatan, lp) VALUES ($1, $2, $3, $4, $5,$6)", [req.body.nim, req.body.nama, req.body.jurusan, req.body.gender, req.body.angkatan, req.body.lp]).then(() => {
@@ -31,6 +33,7 @@ express()
           res.status(200).json('Anggota berhasil ditambahkan');
         }).catch((err) => {
           client.release();
+          console.log(err.stack);
           res.status(500).json('Anggota gagal ditambahkan');
         });
       });
@@ -82,3 +85,5 @@ express()
   })
 
   .listen(PORT, () => console.log(`Listening on ${PORT}`));
+
+  
