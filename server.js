@@ -1,9 +1,11 @@
 const express = require('express')
 const bodyParser = require('body-parser');
-const Axios = require('axios');
 const { Pool } = require('pg');
 require('dotenv').config();
 var cors = require('cors');
+const { OAuth2Client } = require('google-auth-library')
+
+const client = new OAuth2Client("483958587223-cakedgguhjvl7im3ddlkrt8de18756rs.apps.googleusercontent.com")
 
 const PORT = process.env.PORT || 5000
 
@@ -26,6 +28,21 @@ const pool = new Pool(config);
 express()
   .use(bodyParser.json())
   .use(cors())
+  // .post("/api/v1/auth/google", async (req, res) => {
+  //   const { token }  = req.body
+  //   const ticket = await client.verifyIdToken({
+  //       idToken: token,
+  //       audience: process.env.CLIENT_ID
+  //   });
+  //   const { name, email, picture } = ticket.getPayload();    
+  //   const user = await db.user.upsert({ 
+  //       where: { email: email },
+  //       update: { name, picture },
+  //       create: { name, email, picture }
+  //   })
+  //   res.status(201)     
+  //   res.json(user)  
+  // })
   .post('/pemuridan', (req, res) => {
       pool.connect().then((client) => {
         return client.query("INSERT INTO pemuridan (nim, nama, jurusan, gender, angkatan, lp) VALUES ($1, $2, $3, $4, $5,$6)", [req.body.nim, req.body.nama, req.body.jurusan, req.body.gender, req.body.angkatan, req.body.lp]).then(() => {
